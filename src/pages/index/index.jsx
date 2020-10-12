@@ -2,10 +2,10 @@ import React, { Component } from 'react'
 import Taro from '@tarojs/taro'
 import {View, Image, Swiper, SwiperItem, Text} from '@tarojs/components'
 import ListView, { LazyBlock } from "taro-listview";
-import './project.css'
+import './index.css'
 
 let pageIndex = 0;
-export default class Project extends Component {
+export default class Index extends Component {
   constructor(props) {
     super(props);
     this.state={
@@ -18,6 +18,20 @@ export default class Project extends Component {
     }
   }
   componentDidMount () {
+    Taro.request({
+      url: 'https://www.wanandroid.com/banner/json'
+    }).then(res=>{
+        console.log('---Banner数据--',res)
+        Taro.hideLoading()
+      if(res.statusCode === 200) {
+        const data = res.data.data
+        this.setState({
+          bannerData: data
+        })
+      }
+      }
+    )
+
     this.refList.fetchInit();
   }
 
@@ -26,7 +40,7 @@ export default class Project extends Component {
     const {
       data: { data }
     } = await Taro.request({
-      url: `https://www.wanandroid.com/article/listproject/${pIndex}/json`,
+      url: `https://www.wanandroid.com/article/list/${pIndex}/json`,
       data: {
         size: 10,
         curPage: pIndex
@@ -37,7 +51,31 @@ export default class Project extends Component {
   };
 
   componentWillUnmount () { }
+
+  _renderBanner = () => {
+    const {bannerData} = this.state
+    if(bannerData.length === 0) return null
+    return <Swiper
+      className='test-h'
+      indicatorColor='#999'
+      indicatorActiveColor='#333'
+      vertical={false}
+      circular
+      indicatorDots
+      autoplay
+    >
+      {
+        bannerData.map((item)=>{
+          return <SwiperItem>
+            <Image src={item.imagePath} mode='scaleToFill' />
+          </SwiperItem>
+        })
+      }
+    </Swiper>
+  }
+
   refList = {};
+
   insRef = node => {
     this.refList = node;
   };
@@ -79,11 +117,12 @@ export default class Project extends Component {
           return (
             <View key={index}>
               <View  style={{paddingTop: 10, paddingLeft:10, paddingRight: 10}}>
-                <Text style={{fontSize: 15, color:'#000000'}}>{item.title}</Text>
-                <Text style={{fontSize: 12, color:'#2e2e2e', marginTop: 10}}>{item.desc}</Text>
-                <View style={{flexDirection: "row", marginTop: 10}}>
-                  <Text style={{fontSize: 12, color:'#2e2e2e'}}>{item.niceShareDate}</Text>
-                  <Text style={{fontSize: 12, color:'#2e2e2e', marginLeft: 10}}>{item.author}</Text>
+                <Text style={{fontSize: 12, color:'#f0f'}}>{item.title}</Text>
+                <View style={{flexDirection: "row", marginTop: 20}}>
+                  {item.fresh && <Text style={{color: 'red', fontSize: 12}}>新</Text>}
+                  <Text style={{fontSize: 12, color:'#2e2e2e',marginLeft: 5}}>分享人:{item.shareUser}</Text>
+                  <Text style={{fontSize: 12, color:'#2e2e2e',marginLeft: 10}}>分类:{item.chapterName}</Text>
+                  <Text style={{fontSize: 12, color:'#2e2e2e',marginLeft: 10}}>时间:{item.niceShareDate}</Text>
                 </View>
               </View>
               <View style={{backgroundColor: '#00f',height: 10, marginTop: 10}} />
@@ -99,6 +138,7 @@ export default class Project extends Component {
   render () {
     return (
       <View className='index'>
+        {this._renderBanner()}
         {this._renderArticleList()}
       </View>
     )
