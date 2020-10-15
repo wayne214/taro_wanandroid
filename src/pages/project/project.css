@@ -4,6 +4,35 @@
   width: 100%;
 }
 
-.text {
-  width: 100%;
+.list_item_title_text {
+  display: flex;
+  width: 95%;
+  white-space: pre-wrap;
+  overflow: hidden;
+}
+
+.text_desc {
+  display: flex;
+  color: cornflowerblue;
+  overflow: hidden;
+  white-space: pre-wrap;
+  text-overflow: ellipsis;
+  width: 480px;
+  height: 300px;
+  text-align: justify;
+}
+
+.descContainer {
+  flex-direction: row;
+  display: flex;
+  width: 95%;
+  align-items: center;
+  margin-top: 10px;
+  justify-content: space-between;
+}
+
+.hover_img {
+  display: flex;
+  width: 200px;
+  height: 200px;
 }

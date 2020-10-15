@@ -78,9 +78,12 @@ export default class Project extends Component {
         {list.length > 0 ? list.map((item, index) => {
           return (
             <View key={index}>
-              <View  style={{paddingTop: 10, paddingLeft:10, paddingRight: 10}}>
-                <Text style={{fontSize: 15, color:'#000000'}}>{item.title}</Text>
-                <Text style={{fontSize: 12, color:'#2e2e2e', marginTop: 10}}>{item.desc}</Text>
+              <View  style={{paddingTop: 10, paddingLeft:10, paddingRight: 10, width: '100%'}}>
+                <Text style={{fontSize: 15, color:'#000000'}} className='list_item_title_text'>{item.title}</Text>
+                <View className='descContainer'>
+                  <Text className='text_desc' style={{fontSize: 12}}>{item.desc}</Text>
+                  <Image src={item.envelopePic} className='hover_img' />
+                </View>
                 <View style={{flexDirection: "row", marginTop: 10}}>
                   <Text style={{fontSize: 12, color:'#2e2e2e'}}>{item.niceShareDate}</Text>
                   <Text style={{fontSize: 12, color:'#2e2e2e', marginLeft: 10}}>{item.author}</Text>
