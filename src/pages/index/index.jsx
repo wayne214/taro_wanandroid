@@ -85,6 +85,12 @@ export default class Index extends Component {
     console.log(e.detail)
   }
 
+  handleNavigate = () => {
+    Taro.navigateTo({
+      url: '/pages/detail/detail'
+    })
+  }
+
   _renderArticleList = () => {
     const { isLoaded, error, hasMore, isEmpty, list } = this.state;
 
@@ -113,7 +119,7 @@ export default class Index extends Component {
       >
         {list.length > 0 ? list.map((item, index) => {
           return (
-            <View key={index}>
+            <View key={index} onClick={this.handleNavigate}>
               <View  style={{paddingTop: 10, paddingLeft:10, paddingRight: 10}}>
                 <Text style={{fontSize: 12, color:'#f0f'}}>{item.title}</Text>
                 <View style={{flexDirection: "row", marginTop: 20}}>

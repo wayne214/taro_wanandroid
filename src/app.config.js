@@ -1,7 +1,8 @@
 export default {
   pages: [
     'pages/index/index',
-    'pages/project/project'
+    'pages/project/project',
+    'pages/detail/detail'
   ],
   tabBar: {
     'color': '#000',
