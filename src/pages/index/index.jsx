@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import Taro from '@tarojs/taro'
-import {View, Image, Swiper, SwiperItem, Text} from '@tarojs/components'
-import ListView, { LazyBlock } from "taro-listview";
+import {View, Image, Swiper, SwiperItem, Text, ScrollView} from '@tarojs/components'
 import './index.css'
 
 let pageIndex = 0;
@@ -32,22 +31,27 @@ export default class Index extends Component {
       }
     )
 
-    this.refList.fetchInit();
+    this.getData(0)
   }
 
   getData = async (pIndex = pageIndex) => {
-    if (pIndex === 0) this.setState({ isLoaded: false });
-    const {
-      data: { data }
-    } = await Taro.request({
-      url: `https://www.wanandroid.com/article/list/${pIndex}/json`,
+    Taro.showLoading()
+    Taro.request({
+      url: `https://www.wanandroid.com/article/list/${0}/json`,
       data: {
         size: 10,
-        curPage: pIndex
+        curPage: 0
       }
-    });
-    console.log({ data });
-    return { list: data.datas, hasMore: true, isLoaded: pIndex === 0 };
+    }).then(res => {
+      Taro.hideLoading()
+      if(res.statusCode === 200) {
+        console.log('---列表数据--',res)
+        const data = res.data.data
+        this.setState({
+          list: data.datas
+        })
+      }
+    })
   };
 
   componentWillUnmount () { }
@@ -74,44 +78,38 @@ export default class Index extends Component {
     </Swiper>
   }
 
-  refList = {};
+  // or 使用箭头函数
+  onScrollToUpper = () => {}
 
-  insRef = node => {
-    this.refList = node;
-  };
-
-  pullDownRefresh = async () => {
-    pageIndex = 0;
-    const res = await this.getData(0);
-    this.setState(res);
-  };
-
-  onScrollToLower = async fn => {
-    const { list } = this.state;
-    const { list: newList, hasMore } = await this.getData(++pageIndex);
-    this.setState({
-      list: list.concat(newList),
-      hasMore
-    });
-    fn();
-  };
+  onScroll(e){
+    console.log(e.detail)
+  }
 
   _renderArticleList = () => {
     const { isLoaded, error, hasMore, isEmpty, list } = this.state;
 
+    console.log('---list--',list.length)
+
+    const scrollStyle = {
+      height: '1000px'
+    }
+    const scrollTop = 0
+    const Threshold = 20
+
+    if(list.length === 0) return  null
+
     return(
       <View className="list">
-      <ListView
-        lazy
-        ref={node => this.insRef(node)}
-        isLoaded={isLoaded}
-        isError={error}
-        hasMore={hasMore}
-        style={{ height: "100vh" }}
-        isEmpty={isEmpty}
-        onPullDownRefresh={this.pullDownRefresh}
-        onScrollToLower={this.onScrollToLower}
-        lazyStorage='lazyView'
+      <ScrollView
+        className='scrollview'
+        scrollY
+        scrollWithAnimation
+        scrollTop={scrollTop}
+        style={scrollStyle}
+        lowerThreshold={Threshold}
+        upperThreshold={Threshold}
+        onScrollToUpper={this.onScrollToUpper.bind(this)} // 使用箭头函数的时候 可以这样写 `onScrollToUpper={this.onScrollToUpper}`
+        onScroll={this.onScroll}
       >
         {list.length > 0 ? list.map((item, index) => {
           return (
@@ -130,7 +128,7 @@ export default class Index extends Component {
           );
         }) : null
         }
-      </ListView>
+      </ScrollView>
       </View>
     )
   }
